@@ -17,7 +17,6 @@ let
       pkgs.slirp4netns
     ];
     programming_languages = [
-      pkgs.go
       pkgs.julia-stable-bin
     ];
     fun_tools = [
