@@ -1,6 +1,51 @@
-{ config, pkgs, ... }:
+{ lib, config, pkgs, ... }:
 
+
+let
+  pkgs_category = {
+    terminal = [
+      pkgs.zsh # TODO: Set default set for user
+      pkgs.antibody
+      pkgs.spaceship-prompt
+      pkgs.bat
+    ];
+    container_tools = [
+      pkgs.dive
+      pkgs.podman
+      pkgs.buildah
+      pkgs.skopeo
+      pkgs.slirp4netns
+    ];
+    programming_languages = [
+      pkgs.go
+      pkgs.julia-stable-bin
+    ];
+    fun_tools = [
+      pkgs.bettercap
+      pkgs.hey
+    ];
+    dev_tools = [
+      # GO;
+      pkgs.golangci-lint # TODO: set your custom .golangci-lint rules file
+      # EDITOR
+      pkgs.neovim-nightly
+      pkgs.neovim-remote
+      pkgs.neovim-qt
+    ];
+    # NOTICE: try not to add much of desktop files since we still use arch dependencies most of the time
+    desktop = [
+      #pkgs.neovide
+      #pkgs.j4-dmenu-desktop
+      #pkgs.zathura
+      #pkgs.alacritty
+      #pkgs.kitty
+    ];
+  };
+in
 {
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+    "vscode"
+  ];
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
@@ -11,7 +56,7 @@
   home.homeDirectory = "/home/pwyll";
 
   imports = [
-    ../overlays/neovim-nightly.nix
+    ../nixpkgs/overlays/neovim-nightly.nix
   ];
 
   # This value determines the Home Manager release that your
@@ -24,13 +69,13 @@
   # changes in each release.
   home.stateVersion = "21.11";
 
-  home.packages = [
-    pkgs.fortune
-    pkgs.hey
-    # Editor
-    #pkgs.neovide
-    pkgs.neovim-nightly
-    #pkgs.neovim-qt
+  home.packages = pkgs_category.terminal ++
+  pkgs_category.programming_languages ++
+  pkgs_category.dev_tools ++
+  pkgs_category.desktop ++
+  pkgs_category.container_tools ++
+  pkgs_category.fun_tools ++
+  [
     #pkgs.albert
   ];
 
@@ -43,9 +88,18 @@
       key = "rafedramzi@gmail.com";
     };
 
-
     delta = {
       enable = true;
     };
-  }
+  };
+
+  programs.vscode = {
+    # TODO wait for list exnteison and config, many tings todo here! :)
+    enable = false;
+    package = pkgs.vscode-insiders;
+    extensions = [
+
+    ];
+
+  };
 }

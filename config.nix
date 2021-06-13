@@ -1,6 +1,2 @@
 {
-  allowUnfreePredicate = [
-    "roon-server"
-    "vscode"
-  ];
 }
